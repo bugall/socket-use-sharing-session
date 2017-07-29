@@ -12,3 +12,11 @@ $('.getUserInfo').on('click', () => {
         userId: 10000
     });
 });
+
+$('.searchRoutes').on('click', () => {
+    console.log('send message');
+    socket.emit('searchRoutes', {
+        requestId: uuid(),
+        orderId: 10000
+    });
+});
