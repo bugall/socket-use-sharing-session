@@ -10,18 +10,6 @@ var users = require('./routes/users');
 
 var app = express();
 
-//socket
-var socket = require('./lib/socket')();
-var demoUtil = require('./routes/demo.util');
-
-socket.bind([{
-    channel: 'getUser',
-    callback:  demoUtil.searchUser
-}, {
-    channel: 'getRoutesInfo',
-    callback:  demoUtil.getRoutesInfo
-}]);
-
 // view engine setup
 app.set('views', path.join(__dirname, 'public/dist'));
 app.engine('.html', require('ejs').__express);
