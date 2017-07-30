@@ -3,8 +3,7 @@ const searchUser = (opts) => {
     return new Promise((resolve, reject) => {
         // db.find({_id: opts.data.userId})
         resolve({
-            replyId: opts.replyId,
-            requestId: opts.requestId,
+            serverMessageId: opts.serverMessageId,
             data: {
                 userInfo: {
                     _id: '5697915cc882688701d6d563',
@@ -19,8 +18,7 @@ const getRoutesInfo = (opts) => {
     return new Promise((resolve, reject) => {
         // db.routes({_id: opts.data.userId})
         resolve({
-            replyId: opts.replyId,
-            requestId: opts.requestId,
+            serverMessageId: opts.serverMessageId,
             data: {
                 _id: '5697915cc882688701d6d563',
                 item: [{

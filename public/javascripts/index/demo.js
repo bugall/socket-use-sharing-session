@@ -7,16 +7,18 @@ socket.on('message', (message) => {
 })
 $('.getUserInfo').on('click', () => {
     console.log('send message');
-    socket.emit('getUserInfo', {
-        requestId: uuid(),
+    socket.emit('message', {
+        channel:'getUserInfo',
+        clientMessageId: uuid(),
         userId: 10000
     });
 });
 
 $('.searchRoutes').on('click', () => {
     console.log('send message');
-    socket.emit('searchRoutes', {
-        requestId: uuid(),
+    socket.emit('message', {
+        channel:'searchRoutes',
+        clientMessageId: uuid(),
         orderId: 10000
     });
 });
