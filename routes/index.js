@@ -3,7 +3,11 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res) {
-  res.render('index', { title: 'socket.io' });
+    req.session.user = {
+        userId: 10000,
+        name: 'bugall'
+    };
+    res.render('index', { title: 'socket.io' });
 });
 
 module.exports = router;

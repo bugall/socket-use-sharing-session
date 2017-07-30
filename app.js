@@ -2,8 +2,8 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
-var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var http = require('http');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -20,10 +20,32 @@ app.set('view engine', 'html');
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public/dist')));
 
-app.use('/', index);
+
+var demoUtil = require('./routes/demo.util');
+var expressSession   = require('express-session');
+var cookieParser = require('cookie-parser');
+
+var passport = require('passport');
+var MongoStore       = require('connect-mongo')(expressSession);
+var sessionStore     = new MongoStore({ 
+    url: 'mongodb://127.0.0.1:27017/socket',
+    ttl: 24 * 60 * 60 // = 1 day
+});
+var session = expressSession({
+    cookie: cookieParser,
+    secret: 'mySecret',
+    resave: false,
+    saveUninitialized: false,
+    store: sessionStore,
+});
+
+app.use(session);
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use('/index', index);
 app.use('/users', users);
 
 // catch 404 and forward to error handler
@@ -39,10 +61,19 @@ app.use(function(err, req, res, next) {
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
+  console.log(err);
   console.log(err.message);
   // render the error page
   res.status(err.status || 500);
   res.end();
 });
+var server = http.createServer(app);
+server.listen(3000);
 
-module.exports = app;
+const io = require('./lib/socket')(server, {
+    getUserInfo: demoUtil.searchUser,
+    searchRoutes: demoUtil.getRoutesInfo
+});
+io.use((socket, next) => {
+    session(socket.request, socket.request.res, next);
+});
