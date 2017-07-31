@@ -5,9 +5,6 @@ var logger = require('morgan');
 var bodyParser = require('body-parser');
 var http = require('http');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
 
 // view engine setup
@@ -45,6 +42,19 @@ app.use(session);
 app.use(passport.initialize());
 app.use(passport.session());
 
+var server = http.createServer(app);
+server.listen(3000);
+
+const io = require('./lib/socket')(server, {
+    getUserInfo: demoUtil.searchUser,
+    searchRoutes: demoUtil.getRoutesInfo
+});
+io.use((socket, next) => {
+    session(socket.request, socket.request.res, next);
+});
+
+var index = require('./routes/index');
+var users = require('./routes/users');
 app.use('/index', index);
 app.use('/users', users);
 
@@ -67,13 +77,4 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.end();
 });
-var server = http.createServer(app);
-server.listen(3000);
 
-const io = require('./lib/socket')(server, {
-    getUserInfo: demoUtil.searchUser,
-    searchRoutes: demoUtil.getRoutesInfo
-});
-io.use((socket, next) => {
-    session(socket.request, socket.request.res, next);
-});
